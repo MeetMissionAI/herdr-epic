@@ -250,7 +250,9 @@ def install(home: Path, dry_run: bool) -> list[str]:
         elif files.get(rel) in (disk_sha, _sha(disk)) or dest == p["layout"] and _rewritten_by_herdr(disk, data):
             # Ours (also as recorded before live blocks were ignored), or our layout as Herdr rewrote it.
             missing = [] if files.get(rel) in (disk_sha, _sha(disk)) else _missing(json.loads(data), json.loads(disk))
-            actions.append(f"repair {rel} (Herdr had rewritten it, losing {', '.join(missing)}; previous copy backed up)"
+            # A size Herdr keeps for a node that moved back inside its column now sizes it the other way.
+            actions.append(f"repair {rel} (Herdr had rewritten it, losing {', '.join(missing)}; previous copy backed up; "
+                           "if a panel then looks short, herdr-app do layout.resize '{\"id\":\"panel-body\",\"weight\":1}')"
                            if missing else f"update {rel} (previous copy backed up)")
             if not dry_run:
                 backup = p["state_dir"] / "backup" / stamp / rel

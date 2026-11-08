@@ -88,7 +88,7 @@ Install then:
 
 A file this tool installed earlier, still unchanged, is replaced. The old bytes are copied to `~/.config/herdr-epic/backup/<time>/`. A file you have edited, or a file that was already there and was not installed by herdr-epic, stays put. The new bytes go beside it with a `.new` suffix. A `~/.local/bin/herdr-epic` that already points somewhere else is left alone.
 
-Herdr 0.1.13 rewrites a layout it changes itself (when a terminal shown in it ends): it folds a one-child row or column into its child, so Shepherdr's `panel` column disappears, and drops `cloned_from.sha256`. Install treats a `shepherdr-epics.json` that differs from the generated one only by that rewrite as its own: it repairs it (`repair ...` in the actions) and backs up the old copy. A layout that was rewritten and also edited by you stays, with `.new` beside it.
+Herdr 0.1.13 rewrites a layout it changes itself (when a terminal shown in it ends): it folds a one-child row or column into its child, so Shepherdr's `panel` column disappears, and drops `cloned_from.sha256`. Install treats a `shepherdr-epics.json` that differs from the generated one only by that rewrite as its own: it repairs it (`repair ...` in the actions) and backs up the old copy. A layout that was rewritten and also edited by you stays, with `.new` beside it. Herdr keeps the sizes you dragged in `layouts/.state/`: a width you gave `panel-body` while it stood alone becomes its height once it is back inside `panel`, and the panel looks short. `herdr-app do layout.resize '{"id":"panel-body","weight":1}'` makes it fill again.
 
 The same actions are `herdr-epic install --dry-run` and `herdr-epic install`.
 
