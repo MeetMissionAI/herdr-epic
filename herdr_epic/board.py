@@ -34,7 +34,10 @@ def _key_and_log(item: dict, terminal: str | None) -> tuple[dict | None, dict | 
     key = {"machine": None, "folder": item.get("folder"), "slug": slug,
            "id": int(number) if number.isdigit() else item.get("id")} if sep else None
     agent = next((a for a in reversed(item.get("agents") or []) if a.get("log")), None)
-    log = {"path": agent["log"], "kind": agent.get("agent")} if agent and terminal is None else None
+    # address: that agent's ended terminal. Shepherdr's task view opens an ended task by it and
+    # reads the conversation from the log (its Tasks list does the same); without it, "Opening…".
+    log = {"path": agent["log"], "kind": agent.get("agent"), "address": agent.get("address")} \
+        if agent and terminal is None else None
     return key, log
 
 

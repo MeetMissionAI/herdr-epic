@@ -138,7 +138,10 @@ export default class Epics extends View {
     if (!row.terminal && !row.log) return notify({ title: `${row.ref} · ${row.title}`, body: w.notStarted, level: "info" });
     const l = layout();
     if (!find(l, "tasks-thread")) return row.terminal ? run("terminal.peek", { terminal: row.terminal }) : notify({ title: `${row.ref} · ${row.title}`, body: w.notStarted, level: "info" });
-    setShared("tasks.thread", { terminal: row.terminal, task: row.ref, title: row.title, key: row.key ?? null, log: row.log ?? null, at: Date.now() });
+    // An ended task: its last agent's terminal with its log, as Shepherdr's Tasks list opens it (the
+    // view waits on "Opening…" without a terminal).
+    const log = row.log ? { path: row.log.path, kind: row.log.kind ?? null } : null;
+    setShared("tasks.thread", { terminal: row.terminal ?? row.log?.address ?? null, task: row.ref, title: row.title, key: row.key ?? null, log, at: Date.now() });
     for (const [command, args] of revealSteps(l, find(l, "tasks-thread-chat") ? "tasks-thread-chat" : "tasks-thread")) run(command, args);
   }
 
