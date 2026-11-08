@@ -88,6 +88,8 @@ Install then:
 
 A file this tool installed earlier, still unchanged, is replaced. The old bytes are copied to `~/.config/herdr-epic/backup/<time>/`. A file you have edited, or a file that was already there and was not installed by herdr-epic, stays put. The new bytes go beside it with a `.new` suffix. A `~/.local/bin/herdr-epic` that already points somewhere else is left alone.
 
+Herdr 0.1.13 rewrites a layout it changes itself (when a terminal shown in it ends): it folds a one-child row or column into its child, so Shepherdr's `panel` column disappears, and drops `cloned_from.sha256`. Install treats a `shepherdr-epics.json` that differs from the generated one only by that rewrite as its own: it repairs it (`repair ...` in the actions) and backs up the old copy. A layout that was rewritten and also edited by you stays, with `.new` beside it.
+
 The same actions are `herdr-epic install --dry-run` and `herdr-epic install`.
 
 ## Uninstall
@@ -226,6 +228,8 @@ Each task is still reviewed and merged by itself, under Shepherdr's rules for it
 **Shepherdr upgrades.** This tree was tried against Shepherdr 3.1.3. A later Shepherdr can change label names, which Assistant receives task news, or the assistant template. `herdr-epic doctor` checks that the installed `shepherdr` is at least 3.1 and that the labels and `tell-assistant` still appear in the installed files. A `FAIL` on those lines means request delivery and the sidebar may no longer match that Shepherdr.
 
 **The generated layout goes stale.** `shepherdr-epics.json` copies the Shepherdr layout from install time and swaps the sidebar. When `layouts/shepherdr.json` changes, `doctor` reports the mismatch and tells you to run `herdr-epic install` again. If you have edited `shepherdr-epics.json`, install keeps your file and writes `shepherdr-epics.json.new`.
+
+**Clicking a task does nothing, or says no node "panel".** The layout lost nodes Shepherdr's task view needs. `doctor` lists them and says whether Herdr folded them away (run `herdr-epic install` to repair it) or the file was edited (compare it with `shepherdr-epics.json.new`).
 
 **Worktrees from another tool.** Shepherdr can report worktrees under `~/.herdr/worktrees` that it does not recognize, and it sends that report to its Home Assistant. The check is Shepherdr's. herdr-epic does not scan those directories and does not delete them. An older task tool still creating worktrees on the same machine can make those reports appear. herdr-epic does not read that tool's tasks.
 
