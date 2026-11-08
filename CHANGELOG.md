@@ -14,3 +14,7 @@
 - **Git is Shepherdr's.** The orchestrator rules and the worker's info block say that a task's branch, push, pull request and merge belong to Shepherdr: briefs carry no such steps, and a worker asked for a branch or pull request works on its task branch and lets `herdr-task ready` open it. A wish for a target branch becomes the task's base: `task add --base BRANCH` for one task, over the repository's. A worker whose local base is behind its remote rebases its own task branch instead of starting another.
 - **Agent-behaviour evals are optional.** `evals/` runs real agents and grades outcomes, to look into a specific problem; it is not a gate for merging or releasing. There is no pass bar: `--holdout` stays available as an option and reports counts only.
 - **Install.** `./install.sh` copies the mod and layout into the Herdr folder, links `herdr-epic`, and can dry-run. `uninstall` removes unchanged installed files. `doctor` checks versions, config, the layout, and the Shepherdr strings this tool uses.
+
+### Fixed
+
+- **Clicking a task in the sidebar opens it again after Herdr rewrote the layout.** Herdr 0.1.13 rewrites `shepherdr-epics.json` when a terminal shown in it ends, folding Shepherdr's one-child `panel` column away, and the click stopped at "no node \"panel\"". The sidebar now shows the task view through whatever holds it. `install` repairs a layout that differs from the generated one only by that rewrite (backing up the old copy) and still keeps a layout you edited; `doctor` names the nodes a layout lost and says which of the two it is.

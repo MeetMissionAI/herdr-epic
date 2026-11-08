@@ -115,7 +115,7 @@ Programs, through `exec` by name, so `herdr-epic` has to be on `PATH` (install l
 }
 ```
 
-`epic` is null on an unassigned row. `progress.done` is the report's percent, or null. `progress.left` is a short string (`42m`, `1h 5m`) or null. `terminal` is the live address, or null. `key` is null when the task has no `slug#id` key; `machine` in that object is null. `log` is `{path, kind}` only when there is no live terminal and an agent log exists, and null otherwise. A row for a task still in `epic.json` but gone from the store uses status `missing`, `needs` false, `line2` "Not in the task store any more", and null `terminal`, `key`, and `log`.
+`epic` is null on an unassigned row. `progress.done` is the report's percent, or null. `progress.left` is a short string (`42m`, `1h 5m`) or null. `terminal` is the live address, or null. `key` is null when the task has no `slug#id` key; `machine` in that object is null. `log` is `{path, kind, address}` only when there is no live terminal and an agent log exists, and null otherwise: `address` is that agent's ended terminal, which the sidebar hands Shepherdr's task view as `terminal` (as Shepherdr's Tasks list does), so an ended task opens on its conversation. A row for a task still in `epic.json` but gone from the store uses status `missing`, `needs` false, `line2` "Not in the task store any more", and null `terminal`, `key`, and `log`.
 
 Shared keys: `epics.language` (the list copies write the board's language; the switch reads it) and `tasks.thread` (Shepherdr's task view: `terminal`, `task`, `title`, `key`, `log`, `at`). `localStorage` key `view` on the switch, key `open` on a list copy.
 

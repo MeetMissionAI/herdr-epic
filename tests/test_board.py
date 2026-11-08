@@ -111,7 +111,7 @@ class BoardTest(Base):
         out = board.build(self.cfg)
         api, web = self.epic_row(out, "API-1"), self.epic_row(out, "WEB-1")
         self.assertEqual(api["key"], {"machine": None, "folder": str(self.api), "slug": "slug", "id": 1})
-        self.assertEqual(api["log"], {"path": "/l/a.jsonl", "kind": "claude"})
+        self.assertEqual(api["log"], {"path": "/l/a.jsonl", "kind": "claude", "address": "t1"})
         self.assertEqual((web["terminal"], web["log"]), ("t5", None))
         for row in out["epics"][0]["tasks"]:
             self.assertEqual(set(row), KEYS)

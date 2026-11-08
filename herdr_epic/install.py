@@ -54,6 +54,50 @@ def _fingerprint(rel: str, data: bytes) -> str:
     return _canonical_sha(layout)
 
 
+def _as_herdr_rewrites(layout: dict) -> dict:
+    """The layout as Herdr 0.1.13 writes it back when it changes the file itself (a terminal shown in
+    a live block ends): a row or column with one child, inside a row or column, folded into that
+    child; cloned_from cut to its name and version; whole numbers as written by JavaScript. Live
+    blocks are left out (Herdr dropped one, Shepherdr put it back at the end of its stack). Two
+    layouts equal here differ only by such a rewrite, never by an edit of the person's."""
+    def num(value):
+        if isinstance(value, float) and value.is_integer():
+            return int(value)
+        if isinstance(value, dict):
+            return {k: num(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [num(v) for v in value]
+        return value
+
+    def fold(node):
+        if "children" not in node:
+            return node
+        kids = []
+        for child in node["children"]:
+            if child.get("id") in _LIVE_BLOCKS:
+                continue
+            child = fold(child)
+            while node.get("type") in ("row", "column") and child.get("type") in ("row", "column") \
+                    and len(child.get("children", [])) == 1:
+                child = child["children"][0]
+            kids.append(child)
+        return {**node, "children": kids}
+
+    out = fold(num(layout))
+    if isinstance(out.get("cloned_from"), dict):
+        out["cloned_from"] = {k: v for k, v in out["cloned_from"].items() if k in ("name", "version")}
+    return out
+
+
+def _missing(wanted: dict, installed: dict) -> list[str]:
+    """Node ids of `wanted` that `installed` lacks ("<id> header" for a lost header), live blocks
+    aside: the sidebar and Shepherdr's views find their nodes by id (Shepherdr's "panel" column)."""
+    def ids(node):
+        own = {node.get("id"), f"{node.get('id')} header" if node.get("header") else None}
+        return own.union(*(ids(c) for c in node.get("children", [])))
+    return sorted(ids(wanted) - ids(installed) - set(_LIVE_BLOCKS) - {None})
+
+
 def generate_layout(shepherdr_layout: dict) -> dict:
     """Wrap the spaces-chat block in a stack of by-epic, by-repo and the original spaces view."""
     layout = copy.deepcopy(shepherdr_layout)
@@ -89,6 +133,14 @@ def generate_layout(shepherdr_layout: dict) -> dict:
         "sha256": _canonical_sha(shepherdr_layout),
     }
     return layout
+
+
+def _rewritten_by_herdr(disk: bytes, wanted: bytes) -> bool:
+    """True when the layout on disk is the one we'd write, as Herdr rewrites it (_as_herdr_rewrites)."""
+    try:
+        return _as_herdr_rewrites(json.loads(disk)) == _as_herdr_rewrites(json.loads(wanted))
+    except (ValueError, AttributeError, TypeError):
+        return False
 
 
 def _paths(home: Path) -> dict:
@@ -195,8 +247,13 @@ def install(home: Path, dry_run: bool) -> list[str]:
             if rel not in files:
                 actions.append(f"adopt {rel} (already identical)")
             files[rel] = new_sha
-        elif files.get(rel) in (disk_sha, _sha(disk)):  # ours, also as recorded before live blocks were ignored
-            actions.append(f"update {rel} (previous copy backed up)")
+        elif files.get(rel) in (disk_sha, _sha(disk)) or dest == p["layout"] and _rewritten_by_herdr(disk, data):
+            # Ours (also as recorded before live blocks were ignored), or our layout as Herdr rewrote it.
+            missing = [] if files.get(rel) in (disk_sha, _sha(disk)) else _missing(json.loads(data), json.loads(disk))
+            # A size Herdr keeps for a node that moved back inside its column now sizes it the other way.
+            actions.append(f"repair {rel} (Herdr had rewritten it, losing {', '.join(missing)}; previous copy backed up; "
+                           "if a panel then looks short, herdr-app do layout.resize '{\"id\":\"panel-body\",\"weight\":1}')"
+                           if missing else f"update {rel} (previous copy backed up)")
             if not dry_run:
                 backup = p["state_dir"] / "backup" / stamp / rel
                 backup.parent.mkdir(parents=True, exist_ok=True)
@@ -352,27 +409,28 @@ def doctor(home: Path) -> list[dict]:
     except Fail as err:
         add("config", False, str(err))
 
-    clone = None
     try:
-        if p["layout"].exists():
-            clone = json.loads(p["layout"].read_text(encoding="utf-8")).get("cloned_from", {}).get("sha256")
-        now = _canonical_sha(json.loads(p["source_layout"].read_text(encoding="utf-8"))) \
-            if p["source_layout"].exists() else None
-    except (json.JSONDecodeError, UnicodeDecodeError, AttributeError) as err:
+        installed = json.loads(p["layout"].read_text(encoding="utf-8")) if p["layout"].exists() else None
+        source = json.loads(p["source_layout"].read_text(encoding="utf-8")) if p["source_layout"].exists() else None
+        wanted = generate_layout(source) if isinstance(source, dict) else None
+        clone = installed.get("cloned_from", {}).get("sha256") if installed is not None else None
+    except (json.JSONDecodeError, UnicodeDecodeError, AttributeError, Fail) as err:
         add("layout", False, f"cannot read a layout file: {err}")
-        clone, now, unreadable = None, None, True
     else:
-        unreadable = False
-    if unreadable:
-        pass
-    elif clone is None:
-        add("layout", False, "shepherdr-epics.json not installed; run herdr-epic install")
-    elif now is None:
-        add("layout", False, "Shepherdr layout not found")
-    else:
-        same = now == clone
-        add("layout", same, "matches the Shepherdr layout it was generated from" if same else
-            "Shepherdr layout changed since generation; run herdr-epic install to regenerate")
+        if installed is None:
+            add("layout", False, "shepherdr-epics.json not installed; run herdr-epic install")
+        elif wanted is None:
+            add("layout", False, "Shepherdr layout not found")
+        elif _missing(wanted, installed):
+            add("layout", False, f"shepherdr-epics.json is missing {', '.join(_missing(wanted, installed))}: "
+                + ("Herdr rewrote it and folded them away (Herdr 0.1.13 does this when a terminal shown in it ends); "
+                   "run herdr-epic install to repair it (the old copy is backed up)"
+                   if _as_herdr_rewrites(installed) == _as_herdr_rewrites(wanted) else
+                   "it was edited; run herdr-epic install and compare shepherdr-epics.json.new with it"))
+        elif clone == _canonical_sha(source) or _as_herdr_rewrites(installed) == _as_herdr_rewrites(wanted):
+            add("layout", True, "matches the Shepherdr layout it was generated from")
+        else:
+            add("layout", False, "Shepherdr layout changed since generation; run herdr-epic install to regenerate")
 
     sources = sorted((p["app"] / "mods" / "tasks" / "bin" / "herdr_task").glob("*.py"))
     sources += sorted((p["app"] / "mods" / "tasks").glob("*.js")) + sorted((p["app"] / "lib").glob("*.js"))

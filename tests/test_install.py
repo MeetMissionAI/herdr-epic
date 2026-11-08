@@ -429,3 +429,94 @@ class LiveBlockTest(unittest.TestCase):
             layout.write_text(json.dumps(data), encoding="utf-8")
             install.install(home, dry_run=False)
             self.assertTrue((app / "layouts" / "shepherdr-epics.json.new").exists())
+
+
+# A real shepherdr-epics.json as Herdr 0.1.13 left it on a machine (only the artifact's mod name
+# changed): Shepherdr's one-child "panel" and "sidebar-lists" columns folded away, cloned_from's
+# sha256 gone, the task terminal block moved to the end of its stack. It was generated from the
+# same Shepherdr layout as tests/fixtures/shepherdr-layout.json.
+REWRITTEN = Path(__file__).resolve().parent / "fixtures" / "shepherdr-epics-rewritten-by-herdr.json"
+
+
+class HerdrRewriteTest(unittest.TestCase):
+    def _rewritten(self, home, edit=None):
+        app = seed_shepherdr(home)
+        install.install(home, dry_run=False)
+        data = json.loads(REWRITTEN.read_text(encoding="utf-8"))
+        if edit:
+            edit(data)
+        layout = app / "layouts" / "shepherdr-epics.json"
+        layout.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        return app, layout
+
+    def test_install_repairs_a_layout_herdr_rewrote_and_backs_it_up(self):
+        with temp_home() as home:
+            app, layout = self._rewritten(home)
+            before = layout.read_bytes()
+            self.assertIsNone(find(json.loads(before), "panel"))
+            dry = install.install(home, dry_run=True)
+            self.assertEqual(layout.read_bytes(), before)
+            actions = install.install(home, dry_run=False)
+            for listed in (dry, actions):
+                repair = [a for a in listed if a.startswith("repair .config/herdr-app/layouts/shepherdr-epics.json")]
+                self.assertEqual(len(repair), 1, listed)
+                self.assertIn("panel", repair[0])
+            data = json.loads(layout.read_text(encoding="utf-8"))
+            self.assertEqual(find(data, "panel")["children"][0]["id"], "panel-body")
+            self.assertEqual(find(data, "epics-sidebar")["header"]["content"]["props"], {"view": "switch"})
+            self.assertEqual(len(data["cloned_from"]["sha256"]), 64)
+            self.assertFalse((app / "layouts" / "shepherdr-epics.json.new").exists())
+            backups = list((home / ".config/herdr-epic/backup").rglob("shepherdr-epics.json"))
+            self.assertEqual([b.read_bytes() for b in backups], [before])
+
+    def test_a_rewrite_written_with_rust_floats_is_recognised_too(self):
+        def floats(node):
+            if isinstance(node, dict):
+                return {k: float(v) if type(v) is int else floats(v) for k, v in node.items()}
+            return [floats(v) for v in node] if isinstance(node, list) else node
+        with temp_home() as home:
+            app, layout = self._rewritten(home)
+            layout.write_text(json.dumps(floats(json.loads(layout.read_text(encoding="utf-8")))), encoding="utf-8")
+            actions = install.install(home, dry_run=False)
+            self.assertTrue(any(a.startswith("repair") for a in actions), actions)
+
+    def test_a_rewritten_layout_the_person_also_edited_is_kept(self):
+        with temp_home() as home:
+            app, layout = self._rewritten(home, lambda d: d.update(theme="paper"))
+            before = layout.read_bytes()
+            actions = install.install(home, dry_run=False)
+            self.assertEqual(layout.read_bytes(), before)
+            self.assertTrue((app / "layouts" / "shepherdr-epics.json.new").exists(), actions)
+            detail = {c["check"]: c for c in install.doctor(home)}["layout"]
+            self.assertFalse(detail["ok"])
+            self.assertIn("panel", detail["detail"])
+            self.assertIn("edited", detail["detail"])
+
+    def test_doctor_names_the_lost_nodes_and_passes_after_the_repair(self):
+        with StubEnv() as stub, temp_home() as home:
+            stub.respond("herdr-app", ["--version"], "herdr-app 0.1.13\n")
+            self._rewritten(home)
+            layout = {c["check"]: c for c in install.doctor(home)}["layout"]
+            self.assertFalse(layout["ok"])
+            self.assertIn("panel", layout["detail"])
+            self.assertIn("sidebar-lists", layout["detail"])
+            self.assertIn("herdr-epic install", layout["detail"])
+            self.assertNotIn("not installed", layout["detail"])
+            install.install(home, dry_run=False)
+            self.assertTrue({c["check"]: c for c in install.doctor(home)}["layout"]["ok"])
+
+    def test_a_lost_switch_header_is_named_and_not_repaired_as_a_rewrite(self):
+        # Herdr never drops a header: a layout without one was edited, and stays.
+        with temp_home() as home:
+            app = seed_shepherdr(home)
+            install.install(home, dry_run=False)
+            layout = app / "layouts" / "shepherdr-epics.json"
+            data = json.loads(layout.read_text(encoding="utf-8"))
+            del find(data, "epics-sidebar")["header"]
+            layout.write_text(json.dumps(data), encoding="utf-8")
+            detail = {c["check"]: c for c in install.doctor(home)}["layout"]
+            self.assertFalse(detail["ok"])
+            self.assertIn("epics-sidebar header", detail["detail"])
+            install.install(home, dry_run=False)
+            self.assertTrue((app / "layouts" / "shepherdr-epics.json.new").exists())
+            self.assertNotIn("header", find(json.loads(layout.read_text(encoding="utf-8")), "epics-sidebar"))

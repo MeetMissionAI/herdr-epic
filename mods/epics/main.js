@@ -9,17 +9,11 @@ import { View } from "gpui-kit";
 import { v_flex } from "gpui-base";
 import { exec, home, layout, notify, props, readTextFile, run, setShared, shared, spaces, theme, watchFolder } from "herdr";
 import { words } from "./i18n.js";
+import { find, revealSteps } from "./reveal.js";
 import { VIEWS, epicView, message, repoView, switchBar, warning } from "./views.js";
 
 // The sidebar's stack (the layout's id; herdr-epic's generated layout uses the same).
 const STACK = "epics-sidebar";
-
-const find = (node, id) => {
-  if (!node || typeof node !== "object") return null;
-  if (node.id === id) return node;
-  for (const c of node.children ?? []) { const hit = find(c, id); if (hit) return hit; }
-  return null;
-};
 
 const expand = (path) => (path.startsWith("~/") ? `${home()}${path.slice(1)}` : path);
 
@@ -28,8 +22,8 @@ export default class Epics extends View {
     this.view = props()?.view ?? "epic";
     if (this.view === "switch") {
       // The stack keeps its own pick; this one brings back the last pick after a layout reset.
-      const saved = localStorage.getItem("view");
-      if (VIEWS.includes(saved) && find(layout(), STACK)?.active !== saved) run("layout.select", { stack: STACK, child: saved });
+      const saved = localStorage.getItem("view"), stack = find(layout(), STACK);
+      if (stack && VIEWS.includes(saved) && stack.active !== saved) run("layout.select", { stack: STACK, child: saved });
       return;
     }
     this.board = null;
@@ -135,17 +129,20 @@ export default class Epics extends View {
     this.openSpace(root.space, ["root", "show", root.name, "--json"], (out) => out.space, cx);
   }
 
-  // Shepherdr's own task view (its Tasks panel drilled into the task: shared "tasks.thread"),
-  // where the layout has one; else a peek at the task's terminal.
+  // Shepherdr's own task view (its Tasks panel drilled into the task, on its chat: shared
+  // "tasks.thread"), where the layout has one; else a peek at the task's terminal. The view is
+  // brought up through whatever holds it (reveal.js), not by fixed ids: Shepherdr's "panel" column
+  // can be missing from a layout Herdr rewrote.
   openTask(row) {
     const w = words(this.board?.language);
     if (!row.terminal && !row.log) return notify({ title: `${row.ref} · ${row.title}`, body: w.notStarted, level: "info" });
-    if (!find(layout(), "tasks-thread")) return row.terminal ? run("terminal.peek", { terminal: row.terminal }) : notify({ title: `${row.ref} · ${row.title}`, body: w.notStarted, level: "info" });
-    setShared("tasks.thread", { terminal: row.terminal, task: row.ref, title: row.title, key: row.key ?? null, log: row.log ?? null, at: Date.now() });
-    run("layout.select", { stack: "panel-body", child: "tasks" });
-    run("layout.select", { stack: "tasks", child: "tasks-thread" });
-    if (find(layout(), "tasks-thread-body")) run("layout.select", { stack: "tasks-thread-body", child: "tasks-thread-chat" });
-    run("layout.show", { id: "panel" });
+    const l = layout();
+    if (!find(l, "tasks-thread")) return row.terminal ? run("terminal.peek", { terminal: row.terminal }) : notify({ title: `${row.ref} · ${row.title}`, body: w.notStarted, level: "info" });
+    // An ended task: its last agent's terminal with its log, as Shepherdr's Tasks list opens it (the
+    // view waits on "Opening…" without a terminal).
+    const log = row.log ? { path: row.log.path, kind: row.log.kind ?? null } : null;
+    setShared("tasks.thread", { terminal: row.terminal ?? row.log?.address ?? null, task: row.ref, title: row.title, key: row.key ?? null, log, at: Date.now() });
+    for (const [command, args] of revealSteps(l, find(l, "tasks-thread-chat") ? "tasks-thread-chat" : "tasks-thread")) run(command, args);
   }
 
   render() {
