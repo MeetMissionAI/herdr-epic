@@ -1,0 +1,836 @@
+{
+  "language": "en",
+  "roots": [
+    {
+      "name": "shop",
+      "path": "/work/shop-epics",
+      "space": "sp-root-shop"
+    },
+    {
+      "name": "lab",
+      "path": "/work/lab-epics",
+      "space": null
+    }
+  ],
+  "epics": [
+    {
+      "id": "gift-cards",
+      "title": "Gift cards",
+      "folder": "/work/shop-epics/gift-cards",
+      "space": "sp-gift",
+      "state": "open",
+      "archived": null,
+      "counts": {
+        "agents": 4,
+        "working": 2,
+        "needs": 1
+      },
+      "tasks": [
+        {
+          "ref": "API-12",
+          "repo": "shop-api",
+          "title": "Gift card balance endpoint",
+          "status": "working",
+          "needs": false,
+          "line2": "Running the server unit tests",
+          "progress": {
+            "done": 60,
+            "left": "42m"
+          },
+          "epic": {
+            "id": "gift-cards",
+            "title": "Gift cards"
+          },
+          "terminal": "t901",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 12
+          },
+          "log": null
+        },
+        {
+          "ref": "WEB-7",
+          "repo": "shop-web",
+          "title": "Gift card field at checkout",
+          "status": "needs",
+          "needs": true,
+          "line2": "Asks: reuse the current payment form or make a new one?",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-cards",
+            "title": "Gift cards"
+          },
+          "terminal": "t902",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 7
+          },
+          "log": null
+        },
+        {
+          "ref": "IOS-3",
+          "repo": "shop-ios",
+          "title": "Redeem a gift card from the wallet screen, including the scanner flow and the manual code entry fallback",
+          "status": "working",
+          "needs": false,
+          "line2": "Writing the scanner view model",
+          "progress": {
+            "done": 25,
+            "left": "1h 10m"
+          },
+          "epic": {
+            "id": "gift-cards",
+            "title": "Gift cards"
+          },
+          "terminal": "t903",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-ios",
+            "slug": "work-repos-shop-ios",
+            "id": 3
+          },
+          "log": null
+        },
+        {
+          "ref": "AND-4",
+          "repo": "shop-android",
+          "title": "Redeem a gift card",
+          "status": "queued",
+          "needs": false,
+          "line2": "After IOS-3",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-cards",
+            "title": "Gift cards"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-android",
+            "slug": "work-repos-shop-android",
+            "id": 4
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "id": "gift-card-admin",
+      "title": "礼品卡后台",
+      "folder": "/work/shop-epics/gift-card-admin",
+      "space": "sp-gift-admin",
+      "state": "open",
+      "archived": null,
+      "counts": {
+        "agents": 1,
+        "working": 0,
+        "needs": 0
+      },
+      "tasks": [
+        {
+          "ref": "ADM-2",
+          "repo": "shop-admin",
+          "title": "礼品卡批量发放",
+          "status": "ready",
+          "needs": false,
+          "line2": "等待验收",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-card-admin",
+            "title": "礼品卡后台"
+          },
+          "terminal": "t904",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-admin",
+            "slug": "work-repos-shop-admin",
+            "id": 2
+          },
+          "log": null
+        },
+        {
+          "ref": "ADM-3",
+          "repo": "shop-admin",
+          "title": "导出礼品卡报表",
+          "status": "merging",
+          "needs": false,
+          "line2": "正在合并到 dev",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-card-admin",
+            "title": "礼品卡后台"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-admin",
+            "slug": "work-repos-shop-admin",
+            "id": 3
+          },
+          "log": {
+            "path": "/work/logs/ADM-3.jsonl",
+            "kind": "claude"
+          }
+        },
+        {
+          "ref": "API-15",
+          "repo": "shop-api",
+          "title": "Gift card audit log",
+          "status": "missing",
+          "needs": false,
+          "line2": "Not in the task store any more",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-card-admin",
+            "title": "礼品卡后台"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 15
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "id": "checkout-speed",
+      "title": "Checkout speed",
+      "folder": "/work/shop-epics/checkout-speed",
+      "space": "sp-checkout",
+      "state": "open",
+      "archived": null,
+      "counts": {
+        "agents": 1,
+        "working": 1,
+        "needs": 0
+      },
+      "tasks": [
+        {
+          "ref": "WEB-9",
+          "repo": "shop-web",
+          "title": "Lazy-load the cart page",
+          "status": "working",
+          "needs": false,
+          "line2": "Profiling the cart page",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "checkout-speed",
+            "title": "Checkout speed"
+          },
+          "terminal": "t905",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 9
+          },
+          "log": null
+        },
+        {
+          "ref": "API-13",
+          "repo": "shop-api",
+          "title": "Cache shipping quotes",
+          "status": "done",
+          "needs": false,
+          "line2": "Merged",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "checkout-speed",
+            "title": "Checkout speed"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 13
+          },
+          "log": {
+            "path": "/work/logs/API-13.jsonl",
+            "kind": "claude"
+          }
+        },
+        {
+          "ref": "WEB-10",
+          "repo": "shop-web",
+          "title": "Prefetch the payment step",
+          "status": "todo",
+          "needs": false,
+          "line2": "",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "checkout-speed",
+            "title": "Checkout speed"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 10
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "id": "order-export",
+      "title": "Order history export",
+      "folder": "/work/shop-epics/order-export",
+      "space": "sp-export",
+      "state": "done",
+      "archived": null,
+      "counts": {
+        "agents": 0,
+        "working": 0,
+        "needs": 0
+      },
+      "tasks": [
+        {
+          "ref": "API-9",
+          "repo": "shop-api",
+          "title": "Export orders as CSV",
+          "status": "done",
+          "needs": false,
+          "line2": "Merged",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "order-export",
+            "title": "Order history export"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 9
+          },
+          "log": {
+            "path": "/work/logs/API-9.jsonl",
+            "kind": "claude"
+          }
+        },
+        {
+          "ref": "WEB-5",
+          "repo": "shop-web",
+          "title": "Export button on the orders page",
+          "status": "done",
+          "needs": false,
+          "line2": "Merged",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "order-export",
+            "title": "Order history export"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 5
+          },
+          "log": {
+            "path": "/work/logs/WEB-5.jsonl",
+            "kind": "claude"
+          }
+        }
+      ]
+    },
+    {
+      "id": "loyalty-points",
+      "title": "Loyalty points",
+      "folder": "/work/shop-epics/loyalty-points",
+      "space": null,
+      "state": "open",
+      "archived": "2026-11-02T10:15:00+08:00",
+      "counts": {
+        "agents": 0,
+        "working": 0,
+        "needs": 0
+      },
+      "tasks": [
+        {
+          "ref": "API-7",
+          "repo": "shop-api",
+          "title": "Points ledger table",
+          "status": "todo",
+          "needs": false,
+          "line2": "",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "loyalty-points",
+            "title": "Loyalty points"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 7
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "id": "summer-sale",
+      "title": "Summer sale banner",
+      "folder": "/work/shop-epics/summer-sale",
+      "space": null,
+      "state": "done",
+      "archived": "2026-10-20T18:00:00+08:00",
+      "counts": {
+        "agents": 0,
+        "working": 0,
+        "needs": 0
+      },
+      "tasks": [
+        {
+          "ref": "WEB-3",
+          "repo": "shop-web",
+          "title": "Sale banner on the home page",
+          "status": "done",
+          "needs": false,
+          "line2": "Merged",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "summer-sale",
+            "title": "Summer sale banner"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 3
+          },
+          "log": null
+        }
+      ]
+    }
+  ],
+  "unassigned": [
+    {
+      "repo": "shop-api",
+      "tasks": [
+        {
+          "ref": "API-20",
+          "repo": "shop-api",
+          "title": "Fix the flaky login test",
+          "status": "working",
+          "needs": false,
+          "line2": "Rerunning the auth suite",
+          "progress": {
+            "done": 80,
+            "left": "6m"
+          },
+          "epic": null,
+          "terminal": "t906",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 20
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "repo": "shop-web",
+      "tasks": [
+        {
+          "ref": "WEB-11",
+          "repo": "shop-web",
+          "title": "Upgrade the date picker",
+          "status": "needs",
+          "needs": true,
+          "line2": "Wants permission: run npm install",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": null,
+          "terminal": "t907",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 11
+          },
+          "log": null
+        }
+      ]
+    }
+  ],
+  "repos": [
+    {
+      "name": "shop-api",
+      "path": "/work/repos/shop-api",
+      "branch": "dev",
+      "behind": 670,
+      "tasks": [
+        {
+          "ref": "API-12",
+          "repo": "shop-api",
+          "title": "Gift card balance endpoint",
+          "status": "working",
+          "needs": false,
+          "line2": "Running the server unit tests",
+          "progress": {
+            "done": 60,
+            "left": "42m"
+          },
+          "epic": {
+            "id": "gift-cards",
+            "title": "Gift cards"
+          },
+          "terminal": "t901",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 12
+          },
+          "log": null
+        },
+        {
+          "ref": "API-15",
+          "repo": "shop-api",
+          "title": "Gift card audit log",
+          "status": "missing",
+          "needs": false,
+          "line2": "Not in the task store any more",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-card-admin",
+            "title": "礼品卡后台"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 15
+          },
+          "log": null
+        },
+        {
+          "ref": "API-20",
+          "repo": "shop-api",
+          "title": "Fix the flaky login test",
+          "status": "working",
+          "needs": false,
+          "line2": "Rerunning the auth suite",
+          "progress": {
+            "done": 80,
+            "left": "6m"
+          },
+          "epic": null,
+          "terminal": "t906",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 20
+          },
+          "log": null
+        },
+        {
+          "ref": "API-7",
+          "repo": "shop-api",
+          "title": "Points ledger table",
+          "status": "todo",
+          "needs": false,
+          "line2": "",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "loyalty-points",
+            "title": "Loyalty points"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-api",
+            "slug": "work-repos-shop-api",
+            "id": 7
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "name": "shop-web",
+      "path": "/work/repos/shop-web",
+      "branch": "main",
+      "behind": 3,
+      "tasks": [
+        {
+          "ref": "WEB-7",
+          "repo": "shop-web",
+          "title": "Gift card field at checkout",
+          "status": "needs",
+          "needs": true,
+          "line2": "Asks: reuse the current payment form or make a new one?",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-cards",
+            "title": "Gift cards"
+          },
+          "terminal": "t902",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 7
+          },
+          "log": null
+        },
+        {
+          "ref": "WEB-9",
+          "repo": "shop-web",
+          "title": "Lazy-load the cart page",
+          "status": "working",
+          "needs": false,
+          "line2": "Profiling the cart page",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "checkout-speed",
+            "title": "Checkout speed"
+          },
+          "terminal": "t905",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 9
+          },
+          "log": null
+        },
+        {
+          "ref": "WEB-11",
+          "repo": "shop-web",
+          "title": "Upgrade the date picker",
+          "status": "needs",
+          "needs": true,
+          "line2": "Wants permission: run npm install",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": null,
+          "terminal": "t907",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 11
+          },
+          "log": null
+        },
+        {
+          "ref": "WEB-3",
+          "repo": "shop-web",
+          "title": "Sale banner on the home page",
+          "status": "done",
+          "needs": false,
+          "line2": "Merged",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "summer-sale",
+            "title": "Summer sale banner"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-web",
+            "slug": "work-repos-shop-web",
+            "id": 3
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "name": "shop-ios",
+      "path": "/work/repos/shop-ios",
+      "branch": "dev",
+      "behind": 0,
+      "tasks": [
+        {
+          "ref": "IOS-3",
+          "repo": "shop-ios",
+          "title": "Redeem a gift card from the wallet screen, including the scanner flow and the manual code entry fallback",
+          "status": "working",
+          "needs": false,
+          "line2": "Writing the scanner view model",
+          "progress": {
+            "done": 25,
+            "left": "1h 10m"
+          },
+          "epic": {
+            "id": "gift-cards",
+            "title": "Gift cards"
+          },
+          "terminal": "t903",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-ios",
+            "slug": "work-repos-shop-ios",
+            "id": 3
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "name": "shop-android",
+      "path": "/work/repos/shop-android",
+      "branch": "dev",
+      "behind": 12,
+      "tasks": [
+        {
+          "ref": "AND-4",
+          "repo": "shop-android",
+          "title": "Redeem a gift card",
+          "status": "queued",
+          "needs": false,
+          "line2": "After IOS-3",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-cards",
+            "title": "Gift cards"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-android",
+            "slug": "work-repos-shop-android",
+            "id": 4
+          },
+          "log": null
+        }
+      ]
+    },
+    {
+      "name": "shop-admin",
+      "path": "/work/repos/shop-admin",
+      "branch": "main",
+      "behind": 0,
+      "tasks": [
+        {
+          "ref": "ADM-2",
+          "repo": "shop-admin",
+          "title": "礼品卡批量发放",
+          "status": "ready",
+          "needs": false,
+          "line2": "等待验收",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-card-admin",
+            "title": "礼品卡后台"
+          },
+          "terminal": "t904",
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-admin",
+            "slug": "work-repos-shop-admin",
+            "id": 2
+          },
+          "log": null
+        },
+        {
+          "ref": "ADM-3",
+          "repo": "shop-admin",
+          "title": "导出礼品卡报表",
+          "status": "merging",
+          "needs": false,
+          "line2": "正在合并到 dev",
+          "progress": {
+            "done": null,
+            "left": null
+          },
+          "epic": {
+            "id": "gift-card-admin",
+            "title": "礼品卡后台"
+          },
+          "terminal": null,
+          "key": {
+            "machine": null,
+            "folder": "/work/repos/shop-admin",
+            "slug": "work-repos-shop-admin",
+            "id": 3
+          },
+          "log": {
+            "path": "/work/logs/ADM-3.jsonl",
+            "kind": "claude"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+.superpowers/
+__pycache__/
+*.pyc
+.DS_Store
+mods/*/gpui-kit.d.ts
+mods/*/jsconfig.json
+evals/results/
+tests/.forbidden
+docs/
